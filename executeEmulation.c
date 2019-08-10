@@ -1,11 +1,15 @@
 #include "executeEmulation.h"
+#include "cpu.h"
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include <time.h>
+#include <Windows.h>
 
 void execute(const char * p) 
 {
+
+	srand(time(0));
+
 	//resetting the state
 	regs_t regs;
 	memset(&regs, 0, sizeof(regs));
@@ -61,4 +65,11 @@ void yieldError(regs_t *r, uint16_t *stack, const char *error)
 	puts(error);
 	displayRegs(r, stack, STACK_SIZE);
 	getchar();
+}
+
+char bindings[] = {'x', '1', '2', '3', 'q', 'w', 'e', 'a', 's', 'd', 'z', 'c', '4', 'r', 'f', 'v'};
+
+int isButtonPressed(int button)
+{
+	return GetAsyncKeyState(bindings[button]);
 }

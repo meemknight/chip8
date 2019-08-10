@@ -1,6 +1,6 @@
 #include "cpu.h"
 
-void executeInstruction(const char *c, regs_t * regs, uint16_t * stack)
+void executeInstruction(char *c, regs_t *regs, uint16_t *stack)
 {
 	uint8_t *instructions = (uint8_t*)c;
 
@@ -58,7 +58,11 @@ void executeInstruction(const char *c, regs_t * regs, uint16_t * stack)
 
 	case 0x3000:
 	{
-		//todo Skip next instruction if Vx = kk.
+		//Skip next instruction if Vx == kk.
+		if (regs->v[(instructions[regs->pc] & 0x0F00) >> 8] == instructions[regs->pc] & 0x00FF)
+		{
+			regs->pc += 2;
+		}
 		break;
 	}
 
@@ -248,9 +252,15 @@ void executeInstruction(const char *c, regs_t * regs, uint16_t * stack)
 		break;
 
 	case 0xC000:
-		//todo Set Vx = random byte AND kk.
-		break;
+	{
+		//Set Vx = random byte AND kk.
+		uint8_t r = rand() % 256;
+		r &= instructions[regs->pc & 0x00FF];
 
+		instructions[(regs->pc & 0x0F00) >> 8] = r;
+		break;
+	}
+		
 	case 0xD000:
 		//todo draw
 		break;
@@ -260,15 +270,27 @@ void executeInstruction(const char *c, regs_t * regs, uint16_t * stack)
 		switch (instructions[regs->pc] & 0x00FF)
 		{
 		case 0x009E:
-			//
+			//Ex9E - SKP Vx
+			//Skip next instruction if key with the value of Vx is pressed.
+
+			if(isButtonPressed((instructions[regs->pc] & 0x0F00) >> 8))
+			{
+				regs->pc += 2;
+			}
 			break;
 
 		case 0x00A1:
-			//
+			//ExA1 - SKNP Vx
+			//Skip next instruction if key with the value of Vx is not pressed.
+			
+			if (!isButtonPressed((instructions[regs->pc] & 0x0F00) >> 8))
+			{
+				regs->pc += 2;
+			}
 			break;
 
 		default:
-			//todo illegal command
+			yieldError(regs, stack, "illegal instruction 0xE...");
 			break;
 		}
 		break;
@@ -279,34 +301,96 @@ void executeInstruction(const char *c, regs_t * regs, uint16_t * stack)
 		switch (instructions[regs->pc] & 0x00FF)
 		{
 		case 0x0007:
+			//Fx07 - LD Vx, DT
+			//Set Vx = delay timer value.
+			regs->v[(instructions[regs->pc] & 0x0F00) >> 8] = regs->dt;
 			break;
 
 		case 0x000A:
-			break;
+		{
+			//Fx0A - LD Vx, K
+			//Wait for a key press, store the value of the key in Vx.
+			uint8_t key = 255;
+			
+				for(int i=0; i<16; i++)
+				{
+					if (isButtonPressed(i)) 
+					{
+						key = i;
+						break;
+					};
+				}
+			//todo pause execution
 
+				if(key != 255)
+				{
+					regs->v[(instructions[regs->pc] & 0x0F00) >> 8] = key;
+				}
+
+			break;
+		}
 		case 0x0015:
+			//Fx15 - LD DT, Vx
+			//Set delay timer = Vx.
+			regs->dt = regs->v[(instructions[regs->pc] & 0x0F00) >> 8];
 			break;
 
 		case 0x0018:
+			//Fx18 - LD ST, Vx
+			//Set sound timer = Vx.
+			
+			regs->st = regs->v[(instructions[regs->pc] & 0x0F00) >> 8];
 			break;
 
 		case 0x001E:
+			//Fx1E - ADD I, Vx
+			//Set I = I + Vx.
+			regs->i += regs->v[(instructions[regs->pc] & 0x0F00) >> 8];
+			
 			break;
 
 		case 0x0029:
+			//todo
 			break;
 
 		case 0x0033:
+		{	//Fx33 - LD B, Vx
+			//Store BCD representation of Vx in memory locations I, I + 1, and I + 2.
+			int val = regs->v[(instructions[regs->pc] & 0x0F00) >> 8];
+			int ones = val %10;
+			val /= 10;
+			int hundreds = val %10;
+			val /= 10;
+			int tens = val %10;
+			instructions[regs->i] = hundreds;
+			instructions[regs->i + 1] = tens;
+			instructions[regs->i + 2] = ones;
 			break;
-
+		}
 		case 0x0055:
+		{
+		//Fx55 - LD [I], Vx
+		//Store registers V0 through Vx in memory starting at location I.
+			
+			for(int i=0; i< regs->v[(instructions[regs->pc] & 0x0F00) >> 8]; i++)
+			{
+				stack[regs->i + i] = regs->v[i];
+			}			
 			break;
-
+		}
 		case 0x0065:
+		{
+			//Fx65 - LD Vx, [I]
+			//Read registers V0 through Vx from memory starting at location I.
+			for (int i = 0; i < regs->v[(instructions[regs->pc] & 0x0F00) >> 8]; i++)
+			{
+				regs->v[i] = stack[regs->i + i];
+			}
 			break;
-
+		}
 		default:
-			//todo illegal instruction
+			yieldError(regs, stack, "illegal instruction 0xF...");
+
 			break;
 		}
 

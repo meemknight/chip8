@@ -1,6 +1,5 @@
 #pragma once
 #include <stdint.h>
-#include "cpu.h"
 
 #define STACK_SIZE 24
 
@@ -55,3 +54,4 @@ typedef struct
 void execute(const char * p);
 void displayRegs(regs_t *r, uint16_t *stack, long stackSize);
 void yieldError(regs_t *r, uint16_t *stack, const char *error);
+int isButtonPressed(int button);
