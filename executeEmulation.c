@@ -1,52 +1,8 @@
 #include "executeEmulation.h"
-#include <stdint.h>
 #include <string.h>
-
-typedef unsigned char u_char;
-
-
-typedef struct
-{
-	union
-	{
-		u_char v[16];
-		struct
-		{
-			u_char v0;
-			u_char v1;
-			u_char v2;
-			u_char v3;
-			u_char v4;
-			u_char v5;
-			u_char v6;
-			u_char v7;
-			u_char v8;
-			u_char v9;
-			u_char va;
-			u_char vb;
-			u_char vc;
-			u_char vd;
-			u_char ve;
-
-			///also flag register
-			u_char vf;
-		};
-	};
-
-	///program counter
-	uint16_t I;
-	
-	///stack pointer
-	u_char sp;
-
-	///delay timer
-	u_char dt;
-
-	///sound timer
-	u_char st;
-
-}regs_t;
-
+#include <stdio.h>
+#include <time.h>
+#include <time.h>
 
 void execute(const char * p) 
 {
@@ -57,12 +13,52 @@ void execute(const char * p)
 	uint16_t stack[STACK_SIZE];
 	memset(stack, 0, sizeof(stack));
 
+	///milliseconds
+	int deltaTime = 0;
+	int time1 = clock(0);
+	int time2 = clock(0);
+	
+	const int frameDuration = (1.f / PROCESSOR_CLOCK_SPEED) * 1000;
 
 	while(1)
 	{
+		time2 = clock(0);
+		deltaTime += time2 - time1;
+		time1 = clock(0);
 	
-	
+		if(deltaTime > frameDuration)
+		{
+			//cpu logic
+				
+			
+
+			deltaTime = 0;
+		}
 	
 	}
 
+
+}
+
+void displayRegs(regs_t *r, uint16_t *stack, long stackSize)
+{
+	for (int i = 0; i < 16; i++)
+	{
+		printf("v%X %u\n",i , r->v[i]);
+	}
+	puts("");
+
+	for (int i = 0; i < stackSize; i++)
+	{
+		printf("s%.2d %u\n", i, stack[i]);
+	}
+
+};
+
+void yieldError(regs_t *r, uint16_t *stack, const char *error)
+{
+	puts("");
+	puts(error);
+	displayRegs(r, stack, STACK_SIZE);
+	getchar();
 }

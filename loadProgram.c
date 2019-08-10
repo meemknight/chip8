@@ -18,14 +18,14 @@ char* loadProgram(const char *name)
 	fseek(f, 0, SEEK_END);
 	long size = 0;
 	size = ftell(f);
-	size++;
 
 	//reading and null terminating the string
 	rewind(f);
-	char* data = malloc(size * sizeof(char));
+	char* data = malloc((size + 2) * sizeof(char));
 	fread(data, sizeof(char), size, f);
 	data[size - 1] = '\0';
-
+	data[size - 2] = '\0';
+	//last 2 bytes are 0
 
 	fclose(f);
 

@@ -2,16 +2,16 @@
 #include <stdlib.h>
 
 #include "loadProgram.h"
+#include "executeEmulation.h"
 
 void main()
 {
 
 	char * c =loadProgram("rom.txt");
 
-	printf(c);
+	execute(c);
 
 	getchar();
 
-	free(c);
 
 }
