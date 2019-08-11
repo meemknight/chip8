@@ -213,7 +213,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 				regs->vf = 0;
 			}
 
-			regs->v[(instruction & 0x0F00) >> 8] >= 1;
+			regs->v[(instruction & 0x0F00) >> 8] >>= 1;
 
 			break;
 		}
@@ -248,7 +248,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 				regs->vf = 0;
 			}
 
-			regs->v[(instruction & 0x0F00) >> 8] <= 1;
+			regs->v[(instruction & 0x0F00) >> 8] <<= 1;
 
 			break;
 		}
@@ -258,7 +258,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 			break;
 
 		}
-
+		break;
 	}
 
 	case 0x9000:
@@ -278,8 +278,9 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 		break;
 
 	case 0xB000:
+		//Bnnn - JP V0, addr
 		//Jump to location nnn + V0.
-		regs->pc = instruction & 0x0FFF + regs->v0;
+		regs->pc = (instruction & 0x0FFF) + regs->v0;
 		shouldIncreasePC = 0;
 		break;
 
@@ -304,6 +305,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 		uint8_t y = (instruction & 0x00F0) >> 4;
 		uint8_t n = (instruction & 0x000F);
 
+		regs->vf = 0;
 
 		for(int j=0; j<n; j++)
 		{
@@ -333,7 +335,6 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 			}
 		
 		}
-
 
 		break;
 	}
@@ -426,6 +427,10 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 			//Set I = location of sprite for digit Vx.
 
 			uint8_t x = (instruction & 0x0F00) >> 8;
+			if(regs->v[x] > 15)
+			{
+				yieldError(regs, stack, "illegal input for instrution Fx29");
+			}
 			regs->i = regs->v[x] * 5;
 
 			break;
@@ -434,14 +439,15 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 		{	//Fx33 - LD B, Vx
 			//Store BCD representation of Vx in memory locations I, I + 1, and I + 2.
 			int val = regs->v[(instruction & 0x0F00) >> 8];
-			int ones = val %10;
+			int ones = val % 10;
 			val /= 10;
-			int hundreds = val %10;
+			int tens = val % 10;
 			val /= 10;
-			int tens = val %10;
+			int hundreds = val % 10;
 			c[regs->i] = hundreds;
 			c[regs->i + 1] = tens;
 			c[regs->i + 2] = ones;
+
 			break;
 		}
 		case 0x0055:
@@ -449,9 +455,9 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 		//Fx55 - LD [I], Vx
 		//Store registers V0 through Vx in memory starting at location I.
 			
-			for(int i=0; i< regs->v[(instruction & 0x0F00) >> 8]; i++)
+			for(int i=0; i < regs->v[(instruction & 0x0F00) >> 8]; i++)
 			{
-				stack[regs->i + i] = regs->v[i];
+				c[regs->i + i] = regs->v[i];
 			}			
 			break;
 		}
@@ -461,7 +467,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 			//Read registers V0 through Vx from memory starting at location I.
 			for (int i = 0; i < regs->v[(instruction & 0x0F00) >> 8]; i++)
 			{
-				regs->v[i] = stack[regs->i + i];
+				regs->v[i] = c[regs->i + i];
 			}
 			break;
 		}
@@ -470,7 +476,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 
 			break;
 		}
-		//0x9...
+		//0xF...
 		break;
 	}
 

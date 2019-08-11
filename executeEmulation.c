@@ -146,7 +146,7 @@ void yieldError(regs_t *r, uint16_t *stack, const char *error)
 	getchar();
 }
 
-char bindings[] = {'x', '1', '2', '3', 'q', 'w', 'e', 'a', 's', 'd', 'z', 'c', '4', 'r', 'f', 'v'};
+char bindings[] = {'X', '1', '2', '3', 'Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'C', '4', 'R', 'F', 'V'};
 
 int isButtonPressed(int button)
 {
