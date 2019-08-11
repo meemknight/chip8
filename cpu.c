@@ -1,6 +1,6 @@
 #include "cpu.h"
 
-void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack)
+void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *screen)
 {
 	uint16_t *instructions = (uint16_t*)c;
 	int shouldIncreasePC = 1;
@@ -37,7 +37,11 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack)
 			switch (instruction & 0x0FFF)
 			{
 			case 0x00E0:
-				//todo clears the screen
+				//clears the screen
+				for (int i = 0; i < 32 * 64; i++)
+				{
+					screen[i] = ' ';
+				}
 				break;
 
 			case 0x00EE:
@@ -50,6 +54,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack)
 
 				regs->pc = stack[regs->sp];
 				regs->sp--;
+
 
 				break;
 			default:
@@ -275,6 +280,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack)
 	case 0xB000:
 		//Jump to location nnn + V0.
 		regs->pc = instruction & 0x0FFF + regs->v0;
+		shouldIncreasePC = 0;
 		break;
 
 	case 0xC000:
@@ -282,7 +288,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack)
 		//Cxkk - RND Vx, byte
 		//Set Vx = random byte AND kk.
 		uint8_t r = rand() % 256;
-		r &= (instructions[regs->pc / 2 ] & 0x00FF);
+		r &= (instruction & 0x00FF);
 
 		regs->v[(instruction & 0x0F00) >> 8] = r;
 
@@ -290,8 +296,47 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack)
 	}
 		
 	case 0xD000:
-		//todo draw
+	{
+		//Dxyn - DRW Vx, Vy, nibble
+		//Display n - byte sprite starting at memory location I at(Vx, Vy), set VF = collision.
+		
+		uint8_t x = (instruction & 0x0F00) >> 8;
+		uint8_t y = (instruction & 0x00F0) >> 4;
+		uint8_t n = (instruction & 0x000F);
+
+
+		for(int j=0; j<n; j++)
+		{
+			uint8_t line = c[regs->i + j];
+			if(line == 0 )
+			{
+				continue;
+			}
+
+			for(int i = 7; i>=0; i--)
+			{
+				uint8_t pixel = line % 2;
+				line = line >> 1;
+
+				if(pixel)
+				{
+					if(getPixel(i + regs->v[x], j + regs->v[y], screen) == BLOCK_CHARACTER)
+					{
+						*getPixel(i + regs->v[x], j + regs->v[y], screen) = ' ';
+						regs->vf = 1;
+					}else
+					{
+						*getPixel(i + regs->v[x], j + regs->v[y], screen) = BLOCK_CHARACTER;
+					}
+				}
+
+			}
+		
+		}
+
+
 		break;
+	}
 
 	case 0xE000:
 	{
@@ -377,11 +422,14 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack)
 			break;
 
 		case 0x0029:
-			//Fx29 - LD F, Vx
+		{	//Fx29 - LD F, Vx
 			//Set I = location of sprite for digit Vx.
-			//todo
-			break;
 
+			uint8_t x = (instruction & 0x0F00) >> 8;
+			regs->i = regs->v[x] * 5;
+
+			break;
+		}
 		case 0x0033:
 		{	//Fx33 - LD B, Vx
 			//Store BCD representation of Vx in memory locations I, I + 1, and I + 2.

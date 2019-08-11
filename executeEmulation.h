@@ -1,7 +1,9 @@
 #pragma once
 #include <stdint.h>
+#include <Windows.h>
 
 #define STACK_SIZE 24
+#define BLOCK_CHARACTER 219
 
 typedef unsigned char u_char;
 
@@ -57,3 +59,6 @@ void execute(const char * p, long size);
 void displayRegs(regs_t *r, uint16_t *stack, long stackSize);
 void yieldError(regs_t *r, uint16_t *stack, const char *error);
 int isButtonPressed(int button);
+void redrawScreen(char * c, HANDLE h);
+void setFontSize(int a, int b);
+char *getPixel(int x, int y, char *buffer);
