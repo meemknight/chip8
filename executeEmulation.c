@@ -5,14 +5,21 @@
 #include <time.h>
 #include <Windows.h>
 
-void execute(const char * p) 
+void execute(const char * p, long size) 
 {
-
+	
 	srand(time(0));
-
 	//resetting the state
+
+	//reserved from 0 to 0x1ff
+	uint8_t memory[4096];
+	memset(memory, 0, sizeof(memory));
+	//copying the roam
+	memcpy(&memory[512], p, size);
+
 	regs_t regs;
 	memset(&regs, 0, sizeof(regs));
+	regs.pc = 512;
 
 	uint16_t stack[STACK_SIZE];
 	memset(stack, 0, sizeof(stack));
@@ -34,7 +41,18 @@ void execute(const char * p)
 		{
 			//cpu logic
 				
-			
+			executeInstruction(memory, &regs, stack);
+
+			//todo implement sound, properly implement duration
+			if(regs.dt != 0)
+			{
+				regs.dt--;
+			}
+
+			if (regs.st != 0)
+			{
+				regs.st--;
+			}
 
 			deltaTime = 0;
 		}
@@ -56,7 +74,8 @@ void displayRegs(regs_t *r, uint16_t *stack, long stackSize)
 	{
 		printf("s%.2d %u\n", i, stack[i]);
 	}
-
+	puts("");
+	printf("cpu count: %u\n", r->cpuCount);
 };
 
 void yieldError(regs_t *r, uint16_t *stack, const char *error)

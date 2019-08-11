@@ -4,9 +4,9 @@
 
 #include "loadProgram.h"
 
-char* loadProgram(const char *name)
+unsigned char* loadProgram(const char *name, long *s)
 {
-
+	
 	//error checking
 	FILE *f = fopen(name, "rb");
 	if(f == 0)
@@ -21,7 +21,7 @@ char* loadProgram(const char *name)
 
 	//reading and null terminating the string
 	rewind(f);
-	char* data = malloc((size + 2) * sizeof(char));
+	unsigned char* data = malloc((size + 2) * sizeof(char));
 	fread(data, sizeof(char), size, f);
 	data[size - 1] = '\0';
 	data[size - 2] = '\0';
@@ -29,5 +29,19 @@ char* loadProgram(const char *name)
 
 	fclose(f);
 
+	for(int i=0; i< size; i+=2)
+	{
+		int test = data[i];
+		int test2 = data[i+1];
+		int a = (data[i] & 0xF0) >> 4;
+		int b = data[i] & 0x0F;
+		int c = (data[i + 1] & 0xF0) >> 4;
+		int d = data[i + 1] & 0x0F;
+		printf("%X %X %X %X\n", a, b, c, d);
+
+	}
+	puts("\n");
+
+	*s = size;	
 	return data;
 }

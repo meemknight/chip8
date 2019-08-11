@@ -48,10 +48,12 @@ typedef struct
 	///sound timer
 	u_char st;
 
+	unsigned long long cpuCount;
+
 }regs_t;
 
 
-void execute(const char * p);
+void execute(const char * p, long size);
 void displayRegs(regs_t *r, uint16_t *stack, long stackSize);
 void yieldError(regs_t *r, uint16_t *stack, const char *error);
 int isButtonPressed(int button);

@@ -1,3 +1,3 @@
 #pragma once
 
-char* loadProgram(const char *name);
+unsigned char* loadProgram(const char *name, long *s);
