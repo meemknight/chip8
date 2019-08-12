@@ -38,6 +38,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 			{
 			case 0x00E0:
 				//clears the screen
+				regs->shouldRedraw = 1;
 				for (int i = 0; i < 32 * 64; i++)
 				{
 					screen[i] = ' ';
@@ -91,7 +92,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 	case 0x3000:
 	{
 		//Skip next instruction if Vx == kk.
-		if (regs->v[(instruction & 0x0F00) >> 8] == instruction & 0x00FF)
+		if (regs->v[(instruction & 0x0F00) >> 8] == (instruction & 0x00FF))
 		{
 			regs->pc += 2;
 		}
@@ -101,7 +102,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 	case 0x4000:
 	{
 		//3xkk Skip next instruction if Vx != kk.
-		if(regs->v[(instruction & 0x0F00) >> 8] != instruction & 0x00FF)
+		if(regs->v[(instruction & 0x0F00) >> 8] != (instruction & 0x00FF))
 		{
 			regs->pc += 2;
 		}
@@ -300,7 +301,8 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 	{
 		//Dxyn - DRW Vx, Vy, nibble
 		//Display n - byte sprite starting at memory location I at(Vx, Vy), set VF = collision.
-		
+		regs->shouldRedraw = 1;
+
 		uint8_t x = (instruction & 0x0F00) >> 8;
 		uint8_t y = (instruction & 0x00F0) >> 4;
 		uint8_t n = (instruction & 0x000F);
@@ -322,7 +324,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 
 				if(pixel)
 				{
-					if(getPixel(i + regs->v[x], j + regs->v[y], screen) == BLOCK_CHARACTER)
+					if((*getPixel(i + regs->v[x], j + regs->v[y], screen)) != ' ')
 					{
 						*getPixel(i + regs->v[x], j + regs->v[y], screen) = ' ';
 						regs->vf = 1;

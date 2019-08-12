@@ -101,7 +101,11 @@ void execute(const char * p, long size)
 				
 			executeInstruction(memory, &regs, stack, screen);
 
-			redrawScreen(screen, h);
+			if(regs.shouldRedraw)
+			{
+				redrawScreen(screen, h);
+				regs.shouldRedraw = 0;
+			}
 
 			//todo implement sound, properly implement duration
 			if(regs.dt != 0)

@@ -50,6 +50,8 @@ typedef struct
 	///sound timer
 	u_char st;
 
+	u_char shouldRedraw;
+
 	unsigned long long cpuCount;
 
 }regs_t;
