@@ -37,10 +37,10 @@ unsigned char* loadProgram(const char *name, long *s)
 		int b = data[i] & 0x0F;
 		int c = (data[i + 1] & 0xF0) >> 4;
 		int d = data[i + 1] & 0x0F;
-		printf("%X %X %X %X\n", a, b, c, d);
+		//printf("%X %X %X %X\n", a, b, c, d);
 
 	}
-	puts("\n");
+	//puts("\n");
 
 	*s = size;	
 	return data;

@@ -32,8 +32,6 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 
 	case 0x0000:
 	{
-		uint16_t instruct = instruction;
-		uint16_t nibble = instruction & 0xF000;
 			switch (instruction & 0x0FFF)
 			{
 			case 0x00E0:
@@ -48,18 +46,18 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 			case 0x00EE:
 				//Return from a subroutine.
 				//The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
-				if(regs->sp <= 0)
+				regs->sp--;
+				if(regs->sp < 0)
 				{
 					yieldError(&regs, stack, "0x00EE: stack is 0 or less.");
 				}
 
 				regs->pc = stack[regs->sp];
-				regs->sp--;
 
 
 				break;
 			default:
-				yieldError(&regs, stack, "deprecated 0x0nnn command");
+				//yieldError(&regs, stack, "deprecated 0x0nnn command");
 				//jumps at nnn (deprecated)
 				break;
 			}
@@ -77,13 +75,13 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 	case 0x2000:
 	{
 		//calls subroutine
+		stack[regs->sp] = regs->pc;
 		regs->sp++;
-		if(regs->sp >= STACK_SIZE)
+		if (regs->sp > STACK_SIZE)
 		{
 			yieldError(&regs, stack, "0x2000: stack overflow");
 		}
 
-		stack[regs->sp] = regs->pc;
 		regs->pc = instruction & 0x0FFF;
 		shouldIncreasePC = 0;
 		break;
@@ -349,7 +347,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 			//Ex9E - SKP Vx
 			//Skip next instruction if key with the value of Vx is pressed.
 
-			if(isButtonPressed((instruction & 0x0F00) >> 8))
+			if(isButtonPressed(regs->v[(instruction & 0x0F00) >> 8]))
 			{
 				regs->pc += 2;
 			}
@@ -359,7 +357,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 			//ExA1 - SKNP Vx
 			//Skip next instruction if key with the value of Vx is not pressed.
 			
-			if (!isButtonPressed((instruction & 0x0F00) >> 8))
+			if (!isButtonPressed(regs->v[(instruction & 0x0F00) >> 8]))
 			{
 				regs->pc += 2;
 			}
@@ -457,7 +455,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 		//Fx55 - LD [I], Vx
 		//Store registers V0 through Vx in memory starting at location I.
 			
-			for(int i=0; i < regs->v[(instruction & 0x0F00) >> 8]; i++)
+			for(int i=0; i <= (instruction & 0x0F00) >> 8; i++)
 			{
 				c[regs->i + i] = regs->v[i];
 			}			
@@ -467,7 +465,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 		{
 			//Fx65 - LD Vx, [I]
 			//Read registers V0 through Vx from memory starting at location I.
-			for (int i = 0; i < regs->v[(instruction & 0x0F00) >> 8]; i++)
+			for (int i = 0; i <= (instruction & 0x0F00) >> 8; i++)
 			{
 				regs->v[i] = c[regs->i + i];
 			}

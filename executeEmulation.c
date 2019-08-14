@@ -86,7 +86,8 @@ void execute(const char * p, long size)
 	int deltaTime = 0;
 	int time1 = clock(0);
 	int time2 = clock(0);
-	
+	int time = 16;
+
 	const int frameDuration = (1.f / PROCESSOR_CLOCK_SPEED) * 1000;
 
 	while(1)
@@ -95,7 +96,7 @@ void execute(const char * p, long size)
 		deltaTime += time2 - time1;
 		time1 = clock(0);
 	
-		if(deltaTime > frameDuration)
+		//if(deltaTime > frameDuration)
 		{
 			//cpu logic
 				
@@ -108,15 +109,22 @@ void execute(const char * p, long size)
 			}
 
 			//todo implement sound, properly implement duration
-			if(regs.dt != 0)
-			{
-				regs.dt--;
-			}
+			time -= deltaTime;
 
-			if (regs.st != 0)
+			if(time <= 0)
 			{
-				regs.st--;
+				time = 16 + time;
+				if (regs.dt != 0)
+				{
+					regs.dt--;
+				}
+
+				if (regs.st != 0)
+				{
+					regs.st--;
+				}
 			}
+			
 
 			deltaTime = 0;
 		}
@@ -154,7 +162,15 @@ char bindings[] = {'X', '1', '2', '3', 'Q', 'W', 'E', 'A', 'S', 'D', 'Z', 'C', '
 
 int isButtonPressed(int button)
 {
-	return GetAsyncKeyState(bindings[button]);
+
+	if (GetAsyncKeyState(bindings[button]))
+	{
+		return 1;
+	}else
+	{
+		return 0;
+	}	
+
 }
 
 void redrawScreen(char * c, HANDLE h)

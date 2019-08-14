@@ -7,9 +7,9 @@
 
 void main()
 {
-	long size = 0;
-	unsigned char * c =loadProgram("roms/TETRIS", &size);
 
+	long size = 0;
+	unsigned char * c =loadProgram("roms/PONG", &size);
 
 	execute(c, size);
 
