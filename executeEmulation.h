@@ -52,7 +52,7 @@ typedef struct
 
 	u_char shouldRedraw;
 
-	unsigned long long cpuCount;
+	unsigned int cpuCount;
 
 }regs_t;
 

@@ -5,11 +5,6 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 	uint16_t *instructions = (uint16_t*)c;
 	int shouldIncreasePC = 1;
 
-	if(regs->pc % 2 == 1)
-	{
-		yieldError(&regs, stack, "pc is odd.");
-	}
-
 
 	//uint16_t current = instructions[regs->pc / 2];
 	//uint16_t instruction = *((uint16_t*)&c[regs->pc + 1]);
@@ -67,7 +62,13 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 	case 0x1000:
 	{
 		//jumps at nnn
+		//if ((instruction & 0x0FFF) % 2 == 1)
+		//{
+		//	__debugbreak();
+		//}
+
 		regs->pc = instruction & 0x0FFF;
+		
 		shouldIncreasePC = 0;
 		break;
 	}

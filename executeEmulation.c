@@ -96,7 +96,7 @@ void execute(const char * p, long size)
 		deltaTime += time2 - time1;
 		time1 = clock(0);
 	
-		//if(deltaTime > frameDuration)
+		if(deltaTime > frameDuration)
 		{
 			//cpu logic
 				
@@ -117,6 +117,10 @@ void execute(const char * p, long size)
 				if (regs.dt != 0)
 				{
 					regs.dt--;
+					if(regs.dt == 0)
+					{
+						Beep(240, 10);
+					}
 				}
 
 				if (regs.st != 0)
