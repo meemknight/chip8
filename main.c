@@ -5,15 +5,27 @@
 #include "executeEmulation.h"
 
 
-void main()
+void main(int argc, char *argv[])
 {
-
+	unsigned char * c;
 	long size = 0;
-	unsigned char * c =loadProgram("roms/TANK", &size);
+
+	if(argc > 1)
+	{
+		c = loadProgram(argv[1], &size);
+
+	}else
+	{
+		char in[250];
+
+		scanf("%s", in);
+		c = loadProgram(in, &size);
+
+	}
 
 	execute(c, size);
 
-	free(c);
+	//free(c);
 
 	getchar();
 
