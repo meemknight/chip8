@@ -9,7 +9,7 @@ void main()
 {
 
 	long size = 0;
-	unsigned char * c =loadProgram("roms/HIDDEN", &size);
+	unsigned char * c =loadProgram("roms/TANK", &size);
 
 	execute(c, size);
 

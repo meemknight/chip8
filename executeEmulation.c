@@ -54,7 +54,13 @@ void execute(const char * p, long size)
 {
 
 	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-	setFontSize(18, 18);
+
+	//setFontSize(18, 18);
+
+	CONSOLE_CURSOR_INFO ci;
+	GetConsoleCursorInfo(h, &ci);
+	ci.bVisible = 0;
+	
 
 	srand(time(0));
 	//resetting the state
@@ -92,12 +98,15 @@ void execute(const char * p, long size)
 
 	while(1)
 	{
+		SetConsoleCursorInfo(h, &ci);
+
 		time2 = clock(0);
 		deltaTime += time2 - time1;
 		time1 = clock(0);
 	
 		if(deltaTime > frameDuration)
 		{
+
 			//cpu logic
 				
 			executeInstruction(memory, &regs, stack, screen);
@@ -106,6 +115,7 @@ void execute(const char * p, long size)
 			{
 				redrawScreen(screen, h);
 				regs.shouldRedraw = 0;
+
 			}
 
 			//todo implement sound, properly implement duration
@@ -119,7 +129,7 @@ void execute(const char * p, long size)
 					regs.dt--;
 					if(regs.dt == 0)
 					{
-						Beep(240, 10);
+						Beep(640, 350);
 					}
 				}
 
