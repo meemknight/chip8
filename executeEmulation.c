@@ -148,6 +148,7 @@ void execute(const char * p, long size)
 
 }
 
+
 void displayRegs(regs_t *r, uint16_t *stack, long stackSize)
 {
 	for (int i = 0; i < 16; i++)

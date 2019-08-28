@@ -64,3 +64,4 @@ int isButtonPressed(int button);
 void redrawScreen(char * c, HANDLE h);
 void setFontSize(int a, int b);
 char *getPixel(int x, int y, char *buffer);
+void win32execute(const char * p, long size);

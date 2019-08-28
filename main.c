@@ -23,7 +23,7 @@ void main(int argc, char *argv[])
 
 	}
 
-	execute(c, size);
+	win32execute(c, size);
 
 	//free(c);
 
