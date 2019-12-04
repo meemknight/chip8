@@ -4,10 +4,11 @@
 #include "loadProgram.h"
 #include "executeEmulation.h"
 
+#define WIN32MODE
 
 void main(int argc, char *argv[])
 {
-	unsigned char * c;
+	unsigned char * c = 0;
 	long size = 0;
 
 	if(argc > 1)
@@ -16,14 +17,21 @@ void main(int argc, char *argv[])
 
 	}else
 	{
-		char in[250];
+		while (c == 0) 
+		{
+			char in[250];
 
-		scanf("%s", in);
-		c = loadProgram(in, &size);
+			scanf("%s", in);
+			c = loadProgram(in, &size);
 
+		}
 	}
 
+#ifdef WIN32MODE
 	win32execute(c, size);
+#else
+	execute(c, size);
+#endif // WIN32MODE
 
 	//free(c);
 

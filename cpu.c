@@ -7,7 +7,7 @@ void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *s
 
 
 	//uint16_t current = instructions[regs->pc / 2];
-	//uint16_t instruction = *((uint16_t*)&c[regs->pc + 1]);
+	//uint16_t instruction = *((uint16_t*)(c + regs->pc));
 	uint8_t currentsmall = c[regs->pc];
 	uint8_t currentsmall2 = c[regs->pc + 1];
 	uint16_t instruction = (currentsmall << 8) + currentsmall2;
