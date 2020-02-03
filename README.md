@@ -10,3 +10,4 @@ rooms :
 ![](https://github.com/meemknight/photos/blob/master/chip1.png)
 ![](https://github.com/meemknight/photos/blob/master/chip2.png)
 ![](https://github.com/meemknight/photos/blob/master/chip3.png)
+![](https://github.com/meemknight/photos/blob/master/chip4.png)
