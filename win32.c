@@ -154,7 +154,6 @@ void win32execute(const char * p, long size)
 			{
 				win32redrawScreen(screen, wind, bitmap, screenBuf);
 				regs.shouldRedraw = 0;
-
 			}
 
 			//todo implement sound, properly implement duration
@@ -188,7 +187,7 @@ void win32execute(const char * p, long size)
 
 }
 
-void win32redrawScreen(const char *screen, HWND wind, BITMAPINFO info, unsigned char* bitMapMemory)
+void win32redrawScreen(char *screen, HWND wind, BITMAPINFO info, unsigned char* bitMapMemory)
 {
 	HDC hdc = GetDC(wind);
 
@@ -217,7 +216,7 @@ void win32redrawScreen(const char *screen, HWND wind, BITMAPINFO info, unsigned 
 			{
 				bitMapMemory[(x + y * 64) * 4] = 40;
 				bitMapMemory[(x + y * 64) * 4 + 1] = 100;
-				bitMapMemory[(x + y * 64) * 4 + 2] = 20;
+				bitMapMemory[(x + y * 64) * 4 + 2] = 10;
 				bitMapMemory[(x + y * 64) * 4 + 3] = 0;
 			}
 		
@@ -227,7 +226,7 @@ void win32redrawScreen(const char *screen, HWND wind, BITMAPINFO info, unsigned 
 	StretchDIBits
 	(
 		hdc,
-		0, 0, 64 * pixelSize, 32 * pixelSize,
+		0, 0, 64 * pixelSize - pixelSize, 32 * pixelSize,
 		0, 0, 64, 32,
 		bitMapMemory,
 		&info,

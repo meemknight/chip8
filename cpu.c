@@ -1,5 +1,13 @@
 #include "cpu.h"
 
+char *getPixel(int x, int y, char *buffer)
+{
+	x = x % 64;
+	y = y % 32;
+
+	return &buffer[x + (y * 64)];
+}
+
 void executeInstruction(unsigned char *c, regs_t *regs, uint16_t *stack, char *screen)
 {
 	uint16_t *instructions = (uint16_t*)c;

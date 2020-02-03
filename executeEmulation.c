@@ -23,14 +23,6 @@
 
 }
 
-char *getPixel(int x, int y, char *buffer)
-{
-	x = x % 64;
-	y = y % 32;
-
-	return &buffer[x + (y * 64)];
-}
-
  const uint8_t sprites[] = { 
 	 0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 	 0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -115,7 +107,6 @@ void execute(const char * p, long size)
 			{
 				redrawScreen(screen, h);
 				regs.shouldRedraw = 0;
-
 			}
 
 			//todo implement sound, properly implement duration
