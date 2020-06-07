@@ -4,6 +4,7 @@
 #include "loadProgram.h"
 #include "executeEmulation.h"
 
+
 #define WIN32MODE
 
 void main(int argc, char *argv[])
@@ -17,6 +18,8 @@ void main(int argc, char *argv[])
 
 	}else
 	{
+		puts("Type ROM name:");
+
 		while (c == 0) 
 		{
 			char in[250];
@@ -25,6 +28,8 @@ void main(int argc, char *argv[])
 			c = loadProgram(in, &size);
 
 		}
+
+		system("cls");
 	}
 
 #ifdef WIN32MODE

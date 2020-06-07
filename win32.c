@@ -85,7 +85,7 @@ void win32execute(const char * p, long size)
 	(
 		wc.lpszClassName,
 		"CHIP-8",
-		(WS_OVERLAPPEDWINDOW | WS_VISIBLE) ^ WS_SIZEBOX,
+		(WS_OVERLAPPEDWINDOW | WS_VISIBLE) ^ WS_MAXIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
 		pixelSize * 64,
