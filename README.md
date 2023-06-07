@@ -7,6 +7,9 @@ sources :
 rooms :
 * https://github.com/JamesGriffin/CHIP-8-Emulator/tree/master/roms
 
+Youtube Video:
+https://youtu.be/rrACMjzZnuA
+
 ![](https://github.com/meemknight/photos/blob/master/chip1.png)
 ![](https://github.com/meemknight/photos/blob/master/chip2.png)
 ![](https://github.com/meemknight/photos/blob/master/chip3.png)
